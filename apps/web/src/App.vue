@@ -58,6 +58,8 @@ onMounted(async () => {
 <style scoped>
 .app {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background-color: var(--tg-theme-bg-color, #1a1a2e);
   color: var(--tg-theme-text-color, #f5f5f5);
 }

@@ -74,6 +74,7 @@ onMounted(async () => {
   padding: 8px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  margin: auto 0;
 }
 
 .year-row {
