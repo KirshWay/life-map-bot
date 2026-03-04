@@ -32,8 +32,6 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 appuser
 
 COPY --from=builder --chown=appuser:nodejs /app/deploy .
-COPY --from=builder --chown=appuser:nodejs /app/apps/api/dist ./dist
-COPY --from=builder --chown=appuser:nodejs /app/apps/api/drizzle ./drizzle
 COPY docker/api/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 

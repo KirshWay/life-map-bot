@@ -2,6 +2,9 @@
   "name": "bot",
   "version": "0.1.0",
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "tsx watch --env-file=.env src/index.ts",
     "build": "tsc",

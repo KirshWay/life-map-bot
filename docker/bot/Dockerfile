@@ -30,7 +30,6 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 appuser
 
 COPY --from=builder --chown=appuser:nodejs /app/deploy .
-COPY --from=builder --chown=appuser:nodejs /app/apps/bot/dist ./dist
 
 USER appuser
 
