@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  web:
+    image: ghcr.io/kirshway/life-map-bot/web:latest
+    networks:
+      - local
+      - server
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+
+  api:
+    image: ghcr.io/kirshway/life-map-bot/api:latest
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - API_SECRET=${API_SECRET}
+      - DATABASE_PATH=/app/data/life-map.db
+    volumes:
+      - sqlite-data:/app/data
+    networks:
+      - local
+    deploy:
+      replicas: 1
+      update_config:
+        order: stop-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+
+  bot:
+    image: ghcr.io/kirshway/life-map-bot/bot:latest
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - API_URL=http://api:3000
+      - API_SECRET=${API_SECRET}
+      - WEB_APP_URL=${WEB_APP_URL}
+    networks:
+      - local
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  sqlite-data:
+
+networks:
+  local:
+    driver: overlay
+  server:
+    external: true

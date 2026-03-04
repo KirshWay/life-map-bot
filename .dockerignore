@@ -1,0 +1,15 @@
+node_modules
+.turbo
+dist
+.git
+.gitignore
+*.db
+.env
+.env.*
+!.env.example
+.claude
+.vscode
+.editorconfig
+.prettierrc
+*.md
+!pnpm-workspace.yaml

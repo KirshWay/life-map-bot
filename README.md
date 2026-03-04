@@ -1,135 +1,158 @@
-# Turborepo starter
+# 🗓 Life Map
 
-This Turborepo starter is maintained by the Turborepo core team.
+![CI](https://github.com/KirshWay/life-map-bot/actions/workflows/deploy.yml/badge.svg)
+![Version](https://img.shields.io/github/v/tag/KirshWay/life-map-bot?label=version)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Node](https://img.shields.io/badge/node-22-green?logo=node.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
 
-## Using this example
+> _Telegram Mini App that visualizes your life as a grid of weeks — inspired by "Your Life in Weeks" by Tim Urban (Wait But Why)_
 
-Run the following command:
+## Overview
 
-```sh
-npx create-turbo@latest
-```
+Life Map turns your entire lifespan into a visual grid of 4,160 weeks (80 years). Each filled cell is a week you've already lived; the pulsing cell is your current week; the empty cells are what's ahead. The app runs inside Telegram as a Mini App, with a bot that collects your birth date and sends weekly motivation reminders.
 
-## What's inside?
+## Features
 
-This Turborepo includes the following packages/apps:
+- Week grid visualization (80 years x 52 weeks per year)
+- Telegram bot onboarding with birthday collection
+- Weekly motivation notifications via cron (Monday 9:00 UTC)
+- Dark/light theme synced from Telegram client
+- Telegram initData validation (HMAC-SHA256)
+- Dockerized deployment with GitHub Actions CI/CD
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## Architecture
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+life-map-bot/
+├── apps/
+│   ├── api/     — Hono REST API + SQLite (Drizzle ORM)
+│   ├── bot/     — Grammy Telegram bot
+│   └── web/     — Vue 3 SPA (Telegram Mini App)
+├── packages/
+│   └── shared/  — Zod schemas, week calculation utils
+└── docker/      — Dockerfiles per service
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+All three apps share a single TypeScript monorepo managed by Turborepo. The bot communicates with the API over HTTP using a shared secret. The web app authenticates via Telegram initData passed to the API.
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+## Tech Stack
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+| Layer    | Technology                                |
+| -------- | ----------------------------------------- |
+| Frontend | Vue 3, Tailwind CSS 4, @telegram-apps/sdk |
+| API      | Hono, Drizzle ORM, better-sqlite3         |
+| Bot      | grammY, node-cron                         |
+| Shared   | Zod, date-fns, TypeScript                 |
+| Infra    | Docker, GitHub Actions, Docker Swarm      |
+| Tooling  | pnpm, Turborepo, Vitest, ESLint, Prettier |
 
-### Develop
+## Getting Started
 
-To develop all apps and packages, run the following command:
+### Prerequisites
 
-```
-cd my-turborepo
+- Node.js 22+
+- pnpm 9+
+- Telegram bot token from [@BotFather](https://t.me/BotFather)
+- [ngrok](https://ngrok.com/) (or similar tunnel) for HTTPS during local development
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+### Installation
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+git clone https://github.com/KirshWay/life-map-bot.git
+cd life-map-bot
+pnpm install
 ```
 
-### Remote Caching
+### Configuration
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+Copy `.env.example` into each app that needs it and fill in the values:
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+```bash
+cp .env.example apps/api/.env
+cp .env.example apps/bot/.env
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Key variables: `BOT_TOKEN`, `API_SECRET`, `WEB_APP_URL`. See [.env.example](.env.example) for the full list.
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+### Development
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+```bash
+pnpm dev
 ```
 
-## Useful Links
+This starts all three apps concurrently via Turborepo. The web app proxies `/api` requests to the API server automatically.
 
-Learn more about the power of Turborepo:
+For Telegram to reach your local Mini App, expose the web dev server over HTTPS:
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+```bash
+ngrok http 5173
+```
+
+Set `WEB_APP_URL` in `apps/bot/.env` to the ngrok HTTPS URL.
+
+## Deployment
+
+The project deploys via Docker Swarm using a GitHub Actions workflow. On push to `main`:
+
+1. **Test** -- type-check and run all tests
+2. **Build** -- build Docker images for api, bot, and web (parallel)
+3. **Deploy** -- push images to ghcr.io and deploy the stack via SSH
+
+See [.github/workflows/deploy.yml](.github/workflows/deploy.yml) and [docker-compose.yml](docker-compose.yml) for details.
+
+### Required GitHub Secrets
+
+`BOT_TOKEN`, `API_SECRET`, `WEB_APP_URL`, `API_URL`, `SSH_HOST`, `SSH_USER`, `SSH_PRIVATE_KEY`
+
+## Project Structure
+
+```
+life-map-bot/
+├── .github/workflows/
+│   └── deploy.yml               — CI/CD pipeline
+├── apps/
+│   ├── api/
+│   │   ├── src/
+│   │   │   ├── db/              — Drizzle schema and connection
+│   │   │   ├── middleware/      — Auth, Telegram validation, error handler
+│   │   │   ├── routes/          — health, me, users endpoints
+│   │   │   ├── __tests__/       — Vitest tests
+│   │   │   ├── index.ts         — Server entrypoint
+│   │   │   └── migrate.ts       — Programmatic migration runner
+│   │   └── drizzle/             — Generated SQL migrations
+│   ├── bot/
+│   │   └── src/
+│   │       ├── commands/        — /start command
+│   │       ├── handlers/        — Birth date text handler
+│   │       ├── services/        — API client, weekly scheduler
+│   │       ├── bot.ts           — Bot factory with session
+│   │       └── index.ts         — Entrypoint
+│   └── web/
+│       └── src/
+│           ├── components/      — WeekGrid, WeekCell
+│           ├── composables/     — useTelegram, useLifeMap
+│           ├── services/        — API client
+│           ├── types.ts         — WeekStatus const enum
+│           ├── App.vue          — Root component
+│           └── main.ts          — Vue app bootstrap
+├── packages/
+│   └── shared/
+│       └── src/
+│           ├── schemas/         — Zod user schemas
+│           └── utils/           — Week calculation functions
+├── docker/
+│   ├── api/                     — Dockerfile + entrypoint
+│   ├── bot/                     — Dockerfile
+│   └── web/                     — Dockerfile + nginx.conf
+├── scripts/
+│   └── bump-version.sh          — Synchronized SemVer bumping
+├── docker-compose.yml           — Production (Docker Swarm)
+├── compose.dev.yaml             — Local Docker development
+├── turbo.json                   — Turborepo pipeline config
+└── pnpm-workspace.yaml          — Workspace definition
+```
+
+## License
+
+[MIT](LICENSE)
