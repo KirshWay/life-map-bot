@@ -37,6 +37,8 @@ COPY --from=builder --chown=appuser:nodejs /app/apps/api/drizzle ./drizzle
 COPY docker/api/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
+RUN mkdir -p /app/data && chown appuser:nodejs /app/data
+
 USER appuser
 
 EXPOSE 3000
