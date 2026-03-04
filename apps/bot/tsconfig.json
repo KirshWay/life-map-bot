@@ -6,7 +6,9 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "types": ["node"],
+    "rootDir": "./src",
     "outDir": "./dist"
   },
+  "include": ["src"],
   "exclude": ["node_modules"]
 }
