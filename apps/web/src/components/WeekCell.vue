@@ -26,17 +26,17 @@ defineProps<{
 }
 
 .week-cell--lived {
-  background-color: var(--tg-theme-accent-text-color, var(--tg-theme-button-color, #2481cc));
+  background-color: var(--tg-theme-accent-text-color, var(--tg-theme-button-color, #3b82f6));
 }
 
 .week-cell--current {
-  background-color: var(--tg-theme-button-color, #e85d04);
+  background-color: var(--tg-theme-button-color, #f97316);
   animation: pulse 2s ease-in-out infinite;
 }
 
 .week-cell--future {
-  border: 1px solid var(--tg-theme-hint-color, #999999);
-  opacity: 0.3;
+  border: 1px solid var(--tg-theme-hint-color, #4b5563);
+  opacity: 0.4;
 }
 
 @keyframes pulse {

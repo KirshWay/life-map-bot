@@ -58,8 +58,8 @@ onMounted(async () => {
 <style scoped>
 .app {
   min-height: 100vh;
-  background-color: var(--tg-theme-bg-color, #ffffff);
-  color: var(--tg-theme-text-color, #000000);
+  background-color: var(--tg-theme-bg-color, #1a1a2e);
+  color: var(--tg-theme-text-color, #f5f5f5);
 }
 
 .loading {
@@ -72,7 +72,7 @@ onMounted(async () => {
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid var(--tg-theme-hint-color, #ccc);
+  border: 3px solid var(--tg-theme-hint-color, #6b7280);
   border-top-color: var(--tg-theme-button-color, #2481cc);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -102,6 +102,6 @@ onMounted(async () => {
 
 .fallback-text {
   font-size: 14px;
-  color: var(--tg-theme-hint-color, #999);
+  color: var(--tg-theme-hint-color, #6b7280);
 }
 </style>

@@ -72,6 +72,8 @@ onMounted(async () => {
 .week-grid-container {
   width: 100%;
   padding: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .year-row {
@@ -86,7 +88,7 @@ onMounted(async () => {
   font-size: 9px;
   text-align: right;
   padding-right: 4px;
-  color: var(--tg-theme-hint-color, #999);
+  color: var(--tg-theme-hint-color, #6b7280);
 }
 
 .weeks-row {
@@ -94,5 +96,11 @@ onMounted(async () => {
   grid-template-columns: repeat(52, 1fr);
   gap: 1px;
   flex: 1;
+}
+
+@media (min-width: 480px) {
+  .weeks-row {
+    min-width: calc(52 * 9px + 51 * 1px);
+  }
 }
 </style>
