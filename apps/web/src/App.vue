@@ -46,7 +46,7 @@ onMounted(async () => {
       <p class="fallback-text">Send /start to the bot first to set your birth date.</p>
     </div>
 
-    <template v-else>
+    <div v-else class="content">
       <div class="header">
         <p class="header-greeting">
           {{ firstName ? `${firstName}, this is` : 'This is' }} week {{ currentWeek }} of your life
@@ -59,7 +59,7 @@ onMounted(async () => {
         :total-years="totalYears"
         :weeks-per-year="weeksPerYear"
       />
-    </template>
+    </div>
   </div>
 </template>
 
@@ -113,6 +113,10 @@ onMounted(async () => {
 .fallback-text {
   font-size: 14px;
   color: var(--tg-theme-hint-color, #6b7280);
+}
+
+.content {
+  margin: auto 0;
 }
 
 .header {
