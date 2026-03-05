@@ -68,6 +68,10 @@ onMounted(async () => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: calc(
+    var(--tg-viewport-safe-area-inset-top, 0px) +
+      var(--tg-viewport-content-safe-area-inset-top, 0px)
+  );
   background-color: var(--tg-theme-bg-color, #1a1a2e);
   color: var(--tg-theme-text-color, #f5f5f5);
 }

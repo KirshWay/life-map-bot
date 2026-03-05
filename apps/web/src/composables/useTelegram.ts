@@ -109,6 +109,7 @@ export const useTelegram = () => {
     try {
       if (viewport.mount.isAvailable()) await viewport.mount()
       if (viewport.expand.isAvailable()) viewport.expand()
+      if (viewport.bindCssVars.isAvailable()) viewport.bindCssVars()
     } catch {}
 
     try {
