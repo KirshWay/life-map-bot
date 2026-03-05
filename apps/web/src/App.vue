@@ -4,11 +4,12 @@ import { useTelegram } from './composables/useTelegram'
 import { useLifeMap } from './composables/useLifeMap'
 import WeekGrid from './components/WeekGrid.vue'
 
-const { isReady, error: sdkError, initDataRaw, initialize } = useTelegram()
+const { isReady, error: sdkError, firstName, initDataRaw, initialize } = useTelegram()
 const {
   user,
   isLoading,
   error: apiError,
+  totalWeeks,
   totalYears,
   weeksPerYear,
   weeksLived,
@@ -45,13 +46,20 @@ onMounted(async () => {
       <p class="fallback-text">Send /start to the bot first to set your birth date.</p>
     </div>
 
-    <WeekGrid
-      v-else
-      :weeks-lived="weeksLived"
-      :current-week="currentWeek"
-      :total-years="totalYears"
-      :weeks-per-year="weeksPerYear"
-    />
+    <template v-else>
+      <div class="header">
+        <p class="header-greeting">
+          {{ firstName ? `${firstName}, this is` : 'This is' }} week {{ currentWeek }} of your life
+        </p>
+        <p class="header-stats">{{ weeksLived }} of {{ totalWeeks }} weeks lived</p>
+      </div>
+      <WeekGrid
+        :weeks-lived="weeksLived"
+        :current-week="currentWeek"
+        :total-years="totalYears"
+        :weeks-per-year="weeksPerYear"
+      />
+    </template>
   </div>
 </template>
 
@@ -105,5 +113,21 @@ onMounted(async () => {
 .fallback-text {
   font-size: 14px;
   color: var(--tg-theme-hint-color, #6b7280);
+}
+
+.header {
+  text-align: center;
+  padding: 16px 8px 8px;
+}
+
+.header-greeting {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.header-stats {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color, #6b7280);
+  margin-top: 4px;
 }
 </style>

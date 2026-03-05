@@ -11,14 +11,16 @@ import type { ConfigureOptions, RetrieveLPResultCamelCased } from '@telegram-app
 
 type SdkLaunchParams = NonNullable<ConfigureOptions['launchParams']>
 
-interface ExtractedUserData {
+type ExtractedUserData = {
   userId: string
+  firstName?: string
   initDataRaw: string
 }
 
 const extractFromUrl = (): ExtractedUserData | null => {
   try {
     const raw = window.location.hash.slice(1) || window.location.search.slice(1)
+
     if (!raw) return null
 
     const params = new URLSearchParams(raw)
@@ -27,15 +29,22 @@ const extractFromUrl = (): ExtractedUserData | null => {
 
     const initDataParams = new URLSearchParams(initDataStr)
     const userStr = initDataParams.get('user')
+
     if (!userStr) return null
 
     const user: unknown = JSON.parse(decodeURIComponent(userStr))
+
     if (typeof user !== 'object' || user === null) return null
 
     const id = (user as Record<string, unknown>).id
+
     if (id === undefined || id === null) return null
 
-    return { userId: String(id), initDataRaw: initDataStr }
+    return {
+      userId: String(id),
+      firstName: String((user as Record<string, unknown>).first_name || ''),
+      initDataRaw: initDataStr,
+    }
   } catch {
     return null
   }
@@ -55,6 +64,7 @@ export const useTelegram = () => {
   const isReady = ref(false)
   const error = ref<string | null>(null)
   const userId = ref<string | null>(null)
+  const firstName = ref<string | null>(null)
   const initDataRaw = ref<string | null>(null)
 
   const initialize = async () => {
@@ -73,10 +83,14 @@ export const useTelegram = () => {
     }
 
     userId.value = launchParams?.tgWebAppData?.user?.id?.toString() ?? null
+    firstName.value = launchParams?.tgWebAppData?.user?.firstName ?? null
 
     const extracted = extractFromUrl()
     if (!userId.value && extracted) {
       userId.value = extracted.userId
+    }
+    if (!firstName.value && extracted) {
+      firstName.value = extracted.firstName ?? null
     }
     initDataRaw.value = extracted?.initDataRaw ?? null
 
@@ -112,6 +126,7 @@ export const useTelegram = () => {
     isReady,
     error,
     userId,
+    firstName,
     initDataRaw,
     initialize,
   }
