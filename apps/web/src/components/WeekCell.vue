@@ -27,32 +27,16 @@ defineProps<{
 
 .week-cell--lived {
   background-color: var(--tg-theme-accent-text-color, var(--tg-theme-button-color, #3b82f6));
-  animation: fill-in 0.3s ease-out both;
-  animation-delay: calc(var(--week) * 0.7ms);
 }
 
 .week-cell--current {
   background-color: var(--tg-theme-button-color, #f97316);
-  animation:
-    fill-in 0.3s ease-out both,
-    pulse 2s ease-in-out infinite;
-  animation-delay: calc(var(--week) * 0.7ms), calc(var(--week) * 0.7ms + 0.3s);
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .week-cell--future {
   border: 1px solid var(--tg-theme-hint-color, #4b5563);
   opacity: 0.4;
-}
-
-@keyframes fill-in {
-  from {
-    opacity: 0;
-    transform: scale(0);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 @keyframes pulse {
@@ -62,15 +46,6 @@ defineProps<{
   }
   50% {
     opacity: 0.4;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .week-cell--lived {
-    animation: none;
-  }
-  .week-cell--current {
-    animation: pulse 2s ease-in-out infinite;
   }
 }
 </style>

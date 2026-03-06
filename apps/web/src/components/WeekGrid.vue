@@ -52,6 +52,7 @@ onMounted(async () => {
         }
       "
       class="year-row"
+      :style="{ '--year': year }"
     >
       <div class="year-label">
         {{ year % 10 === 0 ? year : '' }}
@@ -62,7 +63,6 @@ onMounted(async () => {
           :key="week.weekNumber"
           :week-number="week.weekNumber"
           :status="week.status"
-          :style="{ '--week': week.weekNumber }"
         />
       </div>
     </div>
@@ -81,6 +81,23 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 2px;
+  animation: row-fade-in 0.4s ease-out both;
+  animation-delay: calc(var(--year) * 15ms);
+}
+
+@keyframes row-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .year-row {
+    animation: none;
+  }
 }
 
 .year-label {
