@@ -52,7 +52,6 @@ onMounted(async () => {
         }
       "
       class="year-row"
-      :style="{ '--year': year }"
     >
       <div class="year-label">
         {{ year % 10 === 0 ? year : '' }}
@@ -75,29 +74,30 @@ onMounted(async () => {
   padding: 8px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  animation: grid-appear 0.6s ease-out;
+}
+
+@keyframes grid-appear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .week-grid-container {
+    animation: none;
+  }
 }
 
 .year-row {
   display: flex;
   align-items: center;
   gap: 2px;
-  animation: row-fade-in 0.4s ease-out both;
-  animation-delay: calc(var(--year) * 15ms);
-}
-
-@keyframes row-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .year-row {
-    animation: none;
-  }
 }
 
 .year-label {
