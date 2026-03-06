@@ -62,6 +62,7 @@ onMounted(async () => {
           :key="week.weekNumber"
           :week-number="week.weekNumber"
           :status="week.status"
+          :style="{ '--week': week.weekNumber }"
         />
       </div>
     </div>
