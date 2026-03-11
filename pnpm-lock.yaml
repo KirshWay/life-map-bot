@@ -40,7 +40,7 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: 1.19.10
-        version: 1.19.10(hono@4.12.4)
+        version: 1.19.10(hono@4.12.7)
       better-sqlite3:
         specifier: 12.6.2
         version: 12.6.2
@@ -48,8 +48,8 @@ importers:
         specifier: 0.45.1
         version: 0.45.1(@types/better-sqlite3@7.6.13)(better-sqlite3@12.6.2)
       hono:
-        specifier: 4.12.4
-        version: 4.12.4
+        specifier: 4.12.7
+        version: 4.12.7
       shared:
         specifier: workspace:*
         version: link:../../packages/shared
@@ -1521,8 +1521,8 @@ packages:
     resolution: {integrity: sha512-wcHAQ1e7svL3fJMpDchcQVcWUmywhuepOOjHUHmMmWAwUJEIyK5ea5sbSjZd+Gy1aMpZeP8VYJa+4tP+j1YptQ==}
     engines: {node: ^12.20.0 || >=14.13.1}
 
-  hono@4.12.4:
-    resolution: {integrity: sha512-ooiZW1Xy8rQ4oELQ++otI2T9DsKpV0M6c6cO6JGx4RTfav9poFFLlet9UMXHZnoM1yG0HWGlQLswBGX3RZmHtg==}
+  hono@4.12.7:
+    resolution: {integrity: sha512-jq9l1DM0zVIvsm3lv9Nw9nlJnMNPOcAtsbsgiUhWcFzPE99Gvo6yRTlszSLLYacMeQ6quHD6hMfId8crVHvexw==}
     engines: {node: '>=16.9.0'}
 
   ieee754@1.2.1:
@@ -2405,9 +2405,9 @@ snapshots:
 
   '@grammyjs/types@3.25.0': {}
 
-  '@hono/node-server@1.19.10(hono@4.12.4)':
+  '@hono/node-server@1.19.10(hono@4.12.7)':
     dependencies:
-      hono: 4.12.4
+      hono: 4.12.7
 
   '@humanfs/core@0.19.1': {}
 
@@ -3256,7 +3256,7 @@ snapshots:
       - encoding
       - supports-color
 
-  hono@4.12.4: {}
+  hono@4.12.7: {}
 
   ieee754@1.2.1: {}
 
