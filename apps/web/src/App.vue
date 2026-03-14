@@ -2,7 +2,9 @@
 import { onMounted } from 'vue'
 import { useTelegram } from './composables/useTelegram'
 import { useLifeMap } from './composables/useLifeMap'
+import { useShareLifeMap } from './composables/useShareLifeMap'
 import WeekGrid from './components/WeekGrid.vue'
+import ShareButton from './components/ShareButton.vue'
 
 const { isReady, error: sdkError, firstName, initDataRaw, initialize } = useTelegram()
 const {
@@ -16,6 +18,15 @@ const {
   currentWeek,
   fetchUser,
 } = useLifeMap()
+
+const { isSharing, share } = useShareLifeMap({
+  weeksLived,
+  currentWeek,
+  totalWeeks,
+  totalYears,
+  weeksPerYear,
+  firstName,
+})
 
 onMounted(async () => {
   await initialize()
@@ -51,7 +62,10 @@ onMounted(async () => {
         <p class="header-greeting">
           {{ firstName ? `${firstName}, this is` : 'This is' }} week {{ currentWeek }} of your life
         </p>
-        <p class="header-stats">{{ weeksLived }} of {{ totalWeeks }} weeks lived</p>
+        <div class="header-stats-row">
+          <p class="header-stats">{{ weeksLived }} of {{ totalWeeks }} weeks lived</p>
+          <ShareButton :is-sharing="isSharing" @share="share" />
+        </div>
       </div>
       <WeekGrid
         :weeks-lived="weeksLived"
@@ -133,9 +147,16 @@ onMounted(async () => {
   font-weight: 600;
 }
 
+.header-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
 .header-stats {
   font-size: 12px;
   color: var(--tg-theme-hint-color, #6b7280);
-  margin-top: 4px;
 }
 </style>
