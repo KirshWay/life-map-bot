@@ -19,13 +19,14 @@ const {
   fetchUser,
 } = useLifeMap()
 
-const { isSharing, share } = useShareLifeMap({
+const { isSharing, shareError, share } = useShareLifeMap({
   weeksLived,
   currentWeek,
   totalWeeks,
   totalYears,
   weeksPerYear,
   firstName,
+  initDataRaw,
 })
 
 onMounted(async () => {
@@ -64,7 +65,7 @@ onMounted(async () => {
         </p>
         <div class="header-stats-row">
           <p class="header-stats">{{ weeksLived }} of {{ totalWeeks }} weeks lived</p>
-          <ShareButton :is-sharing="isSharing" @share="share" />
+          <ShareButton :is-sharing="isSharing" :error="shareError" @share="share" />
         </div>
       </div>
       <WeekGrid

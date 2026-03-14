@@ -6,6 +6,7 @@ import { telegramAuthMiddleware } from './middleware/telegram.js'
 import { userRoutes } from './routes/users.js'
 import { healthRoutes } from './routes/health.js'
 import { meRoutes } from './routes/me.js'
+import { shareRoutes } from './routes/share.js'
 
 const app = new Hono()
 
@@ -15,6 +16,9 @@ app.route('/api/health', healthRoutes)
 
 app.use('/api/me', telegramAuthMiddleware)
 app.route('/api/me', meRoutes)
+
+app.use('/api/share/upload', telegramAuthMiddleware)
+app.route('/api/share', shareRoutes)
 
 app.use('/api/users', apiSecretMiddleware)
 app.use('/api/users/*', apiSecretMiddleware)

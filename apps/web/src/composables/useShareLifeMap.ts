@@ -1,5 +1,8 @@
 import { ref, type Ref, type ComputedRef, unref } from 'vue'
+import { downloadFile } from '@telegram-apps/sdk'
 import { renderLifeMapCanvas, type ThemeColors } from '../utils/renderLifeMapCanvas'
+
+const API_URL = import.meta.env.VITE_API_URL ?? ''
 
 const getThemeColors = (): ThemeColors => {
   const style = getComputedStyle(document.documentElement)
@@ -27,19 +30,25 @@ const canvasToBlob = (canvas: HTMLCanvasElement): Promise<Blob> =>
     }, 'image/png')
   })
 
-const canUseWebShare = (blob: Blob): boolean => {
-  if (!navigator.share || !navigator.canShare) return false
-  const file = new File([blob], 'life-map.png', { type: 'image/png' })
-  return navigator.canShare({ files: [file] })
-}
+const uploadImage = async (blob: Blob, initDataRaw: string): Promise<string> => {
+  const formData = new FormData()
+  formData.append('image', new File([blob], 'life-map.png', { type: 'image/png' }))
 
-const downloadBlob = (blob: Blob, filename: string): void => {
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  const res = await fetch(`${API_URL}/api/share/upload`, {
+    method: 'POST',
+    headers: { 'x-telegram-init-data': initDataRaw },
+    body: formData,
+  })
+
+  const json = (await res.json()) as
+    | { data: { id: string }; error?: never }
+    | { data?: never; error: { message: string } }
+
+  if (!res.ok || json.error) {
+    throw new Error(json.error?.message ?? `Upload failed: ${res.status}`)
+  }
+
+  return `${API_URL}/api/share/${json.data.id}.png`
 }
 
 export const useShareLifeMap = (options: {
@@ -49,11 +58,18 @@ export const useShareLifeMap = (options: {
   totalYears: number
   weeksPerYear: number
   firstName: Ref<string | null>
+  initDataRaw: Ref<string | null>
 }) => {
   const isSharing = ref(false)
   const shareError = ref<string | null>(null)
 
   const share = async (): Promise<void> => {
+    const initData = unref(options.initDataRaw)
+    if (!initData) {
+      shareError.value = 'Not authenticated'
+      return
+    }
+
     isSharing.value = true
     shareError.value = null
 
@@ -69,15 +85,15 @@ export const useShareLifeMap = (options: {
       })
 
       const blob = await canvasToBlob(canvas)
+      const url = await uploadImage(blob, initData)
 
-      if (canUseWebShare(blob)) {
-        const file = new File([blob], 'life-map.png', { type: 'image/png' })
-        await navigator.share({ files: [file] })
+      if (downloadFile.isAvailable()) {
+        await downloadFile(url, 'life-map.png')
       } else {
-        downloadBlob(blob, 'life-map.png')
+        window.open(url, '_blank')
       }
     } catch (e) {
-      if (e instanceof DOMException && e.name === 'AbortError') return
+      if (e instanceof Error && e.message.includes('denied')) return
       shareError.value = e instanceof Error ? e.message : 'Failed to share'
     } finally {
       isSharing.value = false

@@ -1,11 +1,28 @@
 <script setup lang="ts">
-defineProps<{
+import { watch } from 'vue'
+import { showPopup } from '@telegram-apps/sdk'
+
+const props = defineProps<{
   isSharing: boolean
+  error: string | null
 }>()
 
 defineEmits<{
   share: []
 }>()
+
+watch(
+  () => props.error,
+  (msg) => {
+    if (!msg) return
+
+    if (showPopup.isAvailable()) {
+      showPopup({ message: msg, buttons: [{ type: 'ok' }] })
+    } else {
+      alert(msg)
+    }
+  }
+)
 </script>
 
 <template>
