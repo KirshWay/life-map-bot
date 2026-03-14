@@ -5,6 +5,7 @@ import { showPopup } from '@telegram-apps/sdk'
 const props = defineProps<{
   isSharing: boolean
   error: string | null
+  success: boolean
 }>()
 
 defineEmits<{
@@ -20,6 +21,21 @@ watch(
       showPopup({ message: msg, buttons: [{ type: 'ok' }] })
     } else {
       alert(msg)
+    }
+  }
+)
+
+watch(
+  () => props.success,
+  (sent) => {
+    if (!sent) return
+
+    if (showPopup.isAvailable()) {
+      showPopup({
+        title: 'Sent!',
+        message: 'Image sent to your chat with the bot',
+        buttons: [{ type: 'ok' }],
+      })
     }
   }
 )

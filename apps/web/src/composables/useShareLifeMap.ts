@@ -1,5 +1,4 @@
 import { ref, type Ref, type ComputedRef, unref } from 'vue'
-import { downloadFile } from '@telegram-apps/sdk'
 import { renderLifeMapCanvas, type ThemeColors } from '../utils/renderLifeMapCanvas'
 
 const API_URL = import.meta.env.VITE_API_URL ?? ''
@@ -30,7 +29,7 @@ const canvasToBlob = (canvas: HTMLCanvasElement): Promise<Blob> =>
     }, 'image/png')
   })
 
-const uploadImage = async (blob: Blob, initDataRaw: string): Promise<string> => {
+const uploadImage = async (blob: Blob, initDataRaw: string): Promise<void> => {
   const formData = new FormData()
   formData.append('image', new File([blob], 'life-map.png', { type: 'image/png' }))
 
@@ -41,14 +40,12 @@ const uploadImage = async (blob: Blob, initDataRaw: string): Promise<string> => 
   })
 
   const json = (await res.json()) as
-    | { data: { id: string }; error?: never }
+    | { data: { sent: boolean }; error?: never }
     | { data?: never; error: { message: string } }
 
   if (!res.ok || json.error) {
     throw new Error(json.error?.message ?? `Upload failed: ${res.status}`)
   }
-
-  return `${API_URL}/api/share/${json.data.id}.png`
 }
 
 export const useShareLifeMap = (options: {
@@ -62,6 +59,7 @@ export const useShareLifeMap = (options: {
 }) => {
   const isSharing = ref(false)
   const shareError = ref<string | null>(null)
+  const shareSuccess = ref(false)
 
   const share = async (): Promise<void> => {
     const initData = unref(options.initDataRaw)
@@ -72,6 +70,7 @@ export const useShareLifeMap = (options: {
 
     isSharing.value = true
     shareError.value = null
+    shareSuccess.value = false
 
     try {
       const canvas = renderLifeMapCanvas({
@@ -85,20 +84,15 @@ export const useShareLifeMap = (options: {
       })
 
       const blob = await canvasToBlob(canvas)
-      const url = await uploadImage(blob, initData)
+      await uploadImage(blob, initData)
 
-      if (downloadFile.isAvailable()) {
-        await downloadFile(url, 'life-map.png')
-      } else {
-        window.open(url, '_blank')
-      }
+      shareSuccess.value = true
     } catch (e) {
-      if (e instanceof Error && e.message.includes('denied')) return
       shareError.value = e instanceof Error ? e.message : 'Failed to share'
     } finally {
       isSharing.value = false
     }
   }
 
-  return { isSharing, shareError, share }
+  return { isSharing, shareError, shareSuccess, share }
 }

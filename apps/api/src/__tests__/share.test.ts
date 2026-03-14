@@ -1,6 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { Hono } from 'hono'
 import { shareRoutes, resetStores } from '../routes/share.js'
+
+vi.mock('grammy')
 
 const PNG_HEADER = new Uint8Array([
   0x89,
@@ -43,18 +45,26 @@ const uploadPng = (app: Hono, data: Uint8Array) => {
 }
 
 describe('share routes', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     resetStores()
+    vi.stubEnv('BOT_TOKEN', 'test-bot-token')
+
+    const { Api, InputFile } = await import('grammy')
+    vi.mocked(Api).mockImplementation(() => ({ sendPhoto: vi.fn().mockResolvedValue({}) }) as never)
+    vi.mocked(InputFile).mockImplementation(((data: unknown, name: string) => ({
+      data,
+      name,
+    })) as never)
   })
 
   describe('POST /upload', () => {
-    it('should return id for a valid PNG', async () => {
+    it('should send PNG to chat and return success', async () => {
       const app = createTestApp()
       const res = await uploadPng(app, PNG_HEADER)
 
       expect(res.status).toBe(200)
       const json = await res.json()
-      expect(json.data.id).toBeTypeOf('string')
+      expect(json.data.sent).toBe(true)
     })
 
     it('should reject non-PNG files with 400', async () => {
@@ -118,29 +128,22 @@ describe('share routes', () => {
       expect(res1.status).toBe(200)
       expect(res2.status).toBe(200)
     })
-  })
 
-  describe('GET /:filename', () => {
-    it('should return uploaded PNG with correct headers', async () => {
+    it('should return 502 when Bot API fails', async () => {
+      const { Api } = await import('grammy')
+      vi.mocked(Api).mockImplementationOnce(
+        () =>
+          ({
+            sendPhoto: vi.fn().mockRejectedValue(new Error('bot blocked')),
+          }) as never
+      )
+
       const app = createTestApp()
-      const uploadRes = await uploadPng(app, PNG_HEADER)
-      const { data } = await uploadRes.json()
+      const res = await uploadPng(app, PNG_HEADER)
 
-      const getRes = await app.request(`/${data.id}.png`)
-
-      expect(getRes.status).toBe(200)
-      expect(getRes.headers.get('content-type')).toBe('image/png')
-      expect(getRes.headers.get('content-disposition')).toBe('attachment; filename="life-map.png"')
-      expect(getRes.headers.get('access-control-allow-origin')).toBe('*')
-
-      const body = new Uint8Array(await getRes.arrayBuffer())
-      expect(body.slice(0, 4)).toEqual(new Uint8Array([0x89, 0x50, 0x4e, 0x47]))
-    })
-
-    it('should return 404 for non-existent id', async () => {
-      const app = createTestApp()
-      const res = await app.request('/non-existent-id.png')
-      expect(res.status).toBe(404)
+      expect(res.status).toBe(502)
+      const json = await res.json()
+      expect(json.error.code).toBe('SEND_FAILED')
     })
   })
 })
