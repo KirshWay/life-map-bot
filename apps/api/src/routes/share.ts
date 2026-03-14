@@ -104,6 +104,8 @@ shareRoutes.get('/:filename', (c) => {
   }
 
   c.header('Content-Type', 'image/png')
+  c.header('Content-Disposition', 'attachment; filename="life-map.png"')
+  c.header('Content-Length', String(entry.data.byteLength))
   c.header('Cache-Control', 'no-store')
   c.header('Access-Control-Allow-Origin', '*')
   return c.body(

@@ -130,6 +130,7 @@ describe('share routes', () => {
 
       expect(getRes.status).toBe(200)
       expect(getRes.headers.get('content-type')).toBe('image/png')
+      expect(getRes.headers.get('content-disposition')).toBe('attachment; filename="life-map.png"')
       expect(getRes.headers.get('access-control-allow-origin')).toBe('*')
 
       const body = new Uint8Array(await getRes.arrayBuffer())
